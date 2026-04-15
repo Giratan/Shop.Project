@@ -1,0 +1,28 @@
+{
+  "name": "shop.project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Giratan/Shop.Project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Giratan/Shop.Project/issues"
+  },
+  "homepage": "https://github.com/Giratan/Shop.Project#readme",
+  "dependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.6.0",
+    "express": "^5.2.1",
+    "mysql2": "^3.22.0",
+    "node.js": "^0.0.1-security"
+  }
+}
