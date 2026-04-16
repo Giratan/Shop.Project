@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import { Express } from "express";
 import { Connection } from "mysql2/promise";
 import { initDataBase } from "./Server/services/db";
