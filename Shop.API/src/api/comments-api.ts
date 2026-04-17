@@ -97,7 +97,8 @@ commentsRouter.patch('/', async (
     let updateQuery = "UPDATE comments SET ";
 
     const valuesToUpdate = [];
-    ["name", "body", "email"].forEach(fieldName => {
+
+    (["name", "body", "email"] as const).forEach(fieldName => {
       if (req.body.hasOwnProperty(fieldName)) {
         if (valuesToUpdate.length) {
           updateQuery += ", ";

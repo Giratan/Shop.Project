@@ -1,6 +1,9 @@
 import { IComment, IProduct, IProductImage } from "@Shared/types";
 import { mapCommentEntity } from "./services/mapping";
-import { IProductImage, IProductImageEntity } from "../types";
+import { IProductImageEntity, 
+  CommentCreatePayload, 
+  ICommentEntity, 
+  IProductSearchFilter } from "../types";
 import { mapImageEntity } from "./services/mapping";
 
 type CommentValidator = (comment: CommentCreatePayload) => string | null;
@@ -10,12 +13,14 @@ export const validateComment: CommentValidator = (comment) => {
     return "Comment is absent or empty";
   }
 
-  const requiredFields = new Set<keyof CommentCreatePayload>([
-    "name",
-    "email",
-    "body",
-    "productId"
-  ]);
+  const requiredFields = 
+    new Set<keyof 
+      CommentCreatePayload>([
+        "name",
+        "email",
+        "body",
+        "productId"
+      ]);
 
   let wrongFieldName;
 
@@ -52,7 +57,8 @@ export const checkCommentUniq = (payload: CommentCreatePayload, comments: IComme
   );
 }
 
-export const enhanceProductsComments = (
+export const enhanceProductsComments = 
+(
   products: IProduct[],
   commentRows: ICommentEntity[]
 ): IProduct[] => {
@@ -64,7 +70,7 @@ export const enhanceProductsComments = (
       commentsByProductId.set(comment.productId, []);
     }
 
-    const list = commentsByProductId.get(comment.productId);
+    const list = commentsByProductId.get(comment.productId) ?? [];
     commentsByProductId.set(comment.productId, [...list, comment]);
   }
 
@@ -77,7 +83,7 @@ export const enhanceProductsComments = (
   return products;
 }
 
-export const getProductsFilterQuery = (filter: IProduct): [string, string[]] => {
+export const getProductsFilterQuery = (filter: IProductSearchFilter): [string, string[]] => {
   const { title, description, priceFrom, priceTo } = filter;
 
   let query = "SELECT * FROM products WHERE ";
@@ -103,8 +109,8 @@ export const getProductsFilterQuery = (filter: IProduct): [string, string[]] => 
     }
 
     query += `(price > ? AND price < ?)`;
-    values.push(priceFrom || 0);
-    values.push(priceTo || 999999);
+    values.push(String(priceFrom || 0));
+    values.push(String(priceTo || 999999));
   }
 
   return [query, values];
@@ -126,7 +132,7 @@ export const enhanceProductsImages = (
       imagesByProductId.set(image.productId, []);
     }
 
-    const list = imagesByProductId.get(image.productId);
+    const list = imagesByProductId.get(image.productId) ?? [];
     imagesByProductId.set(image.productId, [...list, image]);
 
     if (image.main) {
@@ -138,7 +144,7 @@ export const enhanceProductsImages = (
     product.thumbnail = thumbnailsByProductId.get(product.id);
 
     if (imagesByProductId.has(product.id)) {
-      product.images = imagesByProductId.get(product.id);
+      product.images = imagesByProductId.get(product.id)!;
 
       if (!product.thumbnail) {
         product.thumbnail = product.images[0];

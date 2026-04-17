@@ -37,7 +37,7 @@ productsRouter.get('/', async (req: Request, res: Response) => {
 
     res.send(withImages);
   } catch (e) {
-    throwServerError(res, e);
+    throwServerError(res, e as Error);
   }
 });
 
@@ -66,7 +66,7 @@ productsRouter.get('/search', async (
 
     res.send(withImages);
   } catch (e) {
-    throwServerError(res, e);
+    throwServerError(res, e as Error);
   }
 });
 
@@ -112,7 +112,7 @@ productsRouter.get('/:id', async (
 
     res.send(product);
   } catch (e) {
-    throwServerError(res, e);
+    throwServerError(res, e as Error);
   }
 });
 
@@ -139,7 +139,7 @@ productsRouter.post('/', async (
     res.status(201);
     res.send(`Product id:${productId} has been added!`);
   } catch (e) {
-    throwServerError(res, e);
+    throwServerError(res, e as Error);
   }
 });
 
@@ -182,7 +182,7 @@ productsRouter.delete('/:id', async (
     res.status(200);
     res.end();
   } catch (e) {
-    throwServerError(res, e);
+    throwServerError(res, e as Error);
   }
 });
 
@@ -208,7 +208,7 @@ productsRouter.post('/add-images', async (
     res.status(201);
     res.send(`Images for a product id:${productId} have been added!`);
   } catch (e) {
-    throwServerError(res, e);
+    throwServerError(res, e as Error);
   }
 });
 
@@ -239,6 +239,6 @@ productsRouter.post('/remove-images', async (
     res.status(200);
     res.send(`Images have been removed!`);
   } catch (e) {
-    throwServerError(res, e);
+    throwServerError(res, e as Error);
   }
 });
