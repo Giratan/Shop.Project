@@ -24,4 +24,9 @@ export interface IProductImage {
   url: string;
 }
 
-
+export interface IProductFilterPayload {
+  title?: string;
+  description?: string;
+  priceFrom?: number;
+  priceTo?: number;
+}

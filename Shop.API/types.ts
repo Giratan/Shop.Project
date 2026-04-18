@@ -1,5 +1,5 @@
 import { RowDataPacket } from "mysql2";
-import { IComment, IProduct, IProductImage } from "@Shared/types";
+import { IComment, IProduct, IProductImage, IProductFilterPayload } from "@Shared/types";
 
 export type CommentCreatePayload = Omit<IComment, "id">;
 
@@ -15,12 +15,7 @@ export interface IProductEntity extends IProduct, RowDataPacket {
   product_id: string;
 }
 
-export interface IProductSearchFilter {
-  title?: string;
-  description?: string;
-  priceFrom?: number;
-  priceTo?: number;
-}
+export interface IProductSearchFilter extends IProductFilterPayload {}
 
 export type ImageCreatePayload = Omit<IProductImage, "id" | "productId">;
 
