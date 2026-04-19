@@ -17,7 +17,7 @@ export interface IProductEntity extends IProduct, RowDataPacket {
   product_id: string;
 }
 
-export interface IProductSearchFilter extends IProductFilterPayload {}
+export interface IProductSearchFilter extends IProductFilterPayload { }
 
 export type ImageCreatePayload = Omit<IProductImage, "id" | "productId">;
 
@@ -41,5 +41,5 @@ export type ImagesRemovePayload = string[];
 
 
 export interface IUserRequisitesEntity extends IAuthRequisites, RowDataPacket {
-        id: number;
-    } 
+  id: number;
+}
