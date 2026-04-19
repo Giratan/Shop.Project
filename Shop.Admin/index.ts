@@ -1,5 +1,6 @@
 import express, { Express } from "express";
 import { productsRouter } from "./controllers/products.controller";
+import { authRouter } from "./controllers/auth.controller";
 import layout from "express-ejs-layouts";
 import bodyParser from "body-parser";
 
@@ -15,6 +16,8 @@ export default function (): Express {
     app.use(express.static(__dirname + `/public`));
 
     app.use(bodyParser.urlencoded({extended: false}));
+
+    app.use("/auth", authRouter);
 
     app.use("/", productsRouter);
 

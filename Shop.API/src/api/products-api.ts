@@ -27,9 +27,6 @@ const throwServerError = (res: Response, e: Error) => {
   res.send("Something went wrong");
 }
 
-/**
- * Задание 34.10 – доработанный метод получения списка товаров вместе с изображениями
- */
 productsRouter.get('/', async (req: Request, res: Response) => {
   try {
     const [productRows] = await connection.query<IProductEntity[]>("SELECT * FROM products");
@@ -46,9 +43,6 @@ productsRouter.get('/', async (req: Request, res: Response) => {
   }
 });
 
-/**
- * Задание 34.10 – доработанный метод поиска товаров вместе с изображениями
- */
 productsRouter.get('/search', async (
   req: Request<{}, {}, {}, IProductSearchFilter>,
   res: Response
@@ -75,9 +69,6 @@ productsRouter.get('/search', async (
   }
 });
 
-/**
- * Задание 34.10 – доработанный метод получения товара по id вместе с изображениями
- */
 productsRouter.get('/:id', async (
   req: Request<{ id: string }>,
   res: Response
@@ -121,9 +112,6 @@ productsRouter.get('/:id', async (
   }
 });
 
-/**
- * Задание 34.10 – доработанный метод добавления товара с добавлением изображений в соответствующую таблицу
- */
 productsRouter.post('/', async (
   req: Request<{}, {}, ProductCreatePayload>,
   res: Response
@@ -148,11 +136,6 @@ productsRouter.post('/', async (
   }
 });
 
-/**
- * Задание 34.10
- * доработанный метод удаления товара с предварительным удалением всех изображений и комментариев,
- * которые относятся к этому товару
- */
 productsRouter.delete('/:id', async (
   req: Request<{ id: string }>,
   res: Response
@@ -191,9 +174,6 @@ productsRouter.delete('/:id', async (
   }
 });
 
-/**
- * Задание 34.10 – добавление изображений конкретному товару
- */
 productsRouter.post('/add-images', async (
   req: Request<{}, {}, ProductAddImagesPayload>,
   res: Response
@@ -217,9 +197,6 @@ productsRouter.post('/add-images', async (
   }
 });
 
-/**
- * Задание 34.10 – удаление списка изображений из таблицы images
- */
 productsRouter.post('/remove-images', async (
   req: Request<{}, {}, ImagesRemovePayload>,
   res: Response

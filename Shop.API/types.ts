@@ -1,5 +1,7 @@
 import { RowDataPacket } from "mysql2";
 import { IComment, IProduct, IProductImage, IProductFilterPayload } from "@Shared/types";
+import { IAuthRequisites } from "@Shared/types";
+
 
 export type CommentCreatePayload = Omit<IComment, "id">;
 
@@ -36,3 +38,8 @@ export interface ProductAddImagesPayload {
 }
 
 export type ImagesRemovePayload = string[];
+
+
+export interface IUserRequisitesEntity extends IAuthRequisites, RowDataPacket {
+        id: number;
+    } 

@@ -116,9 +116,6 @@ export const getProductsFilterQuery = (filter: IProductSearchFilter): [string, s
   return [query, values];
 }
 
-/**
- * Задание 34.10 – хелпер для сопоставления изображений и комментариев по productId
- */
 export const enhanceProductsImages = (
   products: IProduct[],
   imageRows: IProductImageEntity[]
