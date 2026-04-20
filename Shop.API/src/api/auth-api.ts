@@ -14,6 +14,8 @@ authRouter.post('/', async (
         "SELECT * FROM users WHERE username = ? AND password = ?",
         [username, password]
     );
+    
+    console.log(data);
 
     if (!data?.length) {
         res.status(404);

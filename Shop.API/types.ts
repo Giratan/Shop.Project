@@ -24,7 +24,6 @@ export type ImageCreatePayload = Omit<IProductImage, "id" | "productId">;
 export type ProductCreatePayload =
   Omit<IProduct, "id" | "comments" | "thumbnail" | "images"> & { images: ImageCreatePayload[] };
 
-
 export interface IProductImageEntity extends RowDataPacket {
   image_id: string;
   url: string;
@@ -38,7 +37,6 @@ export interface ProductAddImagesPayload {
 }
 
 export type ImagesRemovePayload = string[];
-
 
 export interface IUserRequisitesEntity extends IAuthRequisites, RowDataPacket {
   id: number;

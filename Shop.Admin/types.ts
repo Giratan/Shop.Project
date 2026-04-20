@@ -1,3 +1,9 @@
+declare module "express-session" {
+    export interface SessionData {
+        username?: string;
+    }
+}
+
 export interface IProductEditData {
     title: string;
     description: string;
