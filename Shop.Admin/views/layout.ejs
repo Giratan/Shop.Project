@@ -11,7 +11,10 @@
     <header class = "header">
         <div class = "logo"></div>
 
-        <div>
+        <div class="header-controls">
+            <% if (!location.includes("/login")) { %>
+                <a href="<%= `/${process.env.ADMIN_PATH}/new-product` %>">ADD PRODUCT</a>
+            <% } %>
             <a href="<%= `/${process.env.ADMIN_PATH}/auth/logout` %>">LOGOUT</a>
         </div>
     </header>

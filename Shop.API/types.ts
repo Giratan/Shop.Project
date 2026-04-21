@@ -1,7 +1,9 @@
 import { RowDataPacket } from "mysql2";
-import { IComment, IProduct, IProductImage, IProductFilterPayload } from "@Shared/types";
-import { IAuthRequisites } from "@Shared/types";
-
+import { IAuthRequisites, 
+  IComment, 
+  IProduct, 
+  IProductFilterPayload, 
+  IProductImage } from "@Shared/types";
 
 export type CommentCreatePayload = Omit<IComment, "id">;
 
@@ -17,7 +19,7 @@ export interface IProductEntity extends IProduct, RowDataPacket {
   product_id: string;
 }
 
-export interface IProductSearchFilter extends IProductFilterPayload { }
+export interface IProductSearchFilter extends IProductFilterPayload {}
 
 export type ImageCreatePayload = Omit<IProductImage, "id" | "productId">;
 
@@ -40,4 +42,12 @@ export type ImagesRemovePayload = string[];
 
 export interface IUserRequisitesEntity extends IAuthRequisites, RowDataPacket {
   id: number;
+}
+
+export type AddSimilarProductsPayload = [string, string][];
+
+export interface ISimilarProductEntity extends RowDataPacket {
+  id: number;
+  first_product: string;
+  second_product: string;
 }

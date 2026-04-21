@@ -27,7 +27,7 @@ export const INSERT_PRODUCT_IMAGES_QUERY = `
 `;
 
 export const DELETE_IMAGES_QUERY = `
-  DELETE FROM images
+  DELETE FROM images 
   WHERE image_id IN ?;
 `;
 
@@ -46,3 +46,9 @@ export const UPDATE_PRODUCT_FIELDS = `
     SET title = ?, description = ?, price = ? 
     WHERE product_id = ?
 `
+
+export const DELETE_SIMILAR_PRODUCTS = `
+  DELETE FROM similar_products 
+  WHERE first_product IN (?)
+  OR second_product IN (?);
+`;

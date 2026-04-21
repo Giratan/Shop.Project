@@ -2,22 +2,33 @@ import { Request, Response, Router } from "express";
 import { connection } from "../../index";
 import { v4 as uuidv4 } from 'uuid';
 import { OkPacket } from "mysql2";
-import { enhanceProductsComments, enhanceProductsImages, getProductsFilterQuery } from "../helpers";
 import {
-  ICommentEntity, ImagesRemovePayload,
+  enhanceProductsComments,
+  enhanceProductsImages,
+  getProductsFilterQuery,
+  validateAddSimilarProductsBody, validateRemoveSimilarProductsBody
+} from "../helpers";
+import {
+  AddSimilarProductsPayload,
+  ICommentEntity,
+  ImagesRemovePayload,
   IProductEntity,
   IProductImageEntity,
-  IProductSearchFilter,
+  IProductSearchFilter, ISimilarProductEntity,
   ProductAddImagesPayload,
   ProductCreatePayload
+
 } from "../../types";
 import { mapCommentsEntity, mapImagesEntity, mapProductsEntity } from "../services/mapping";
 import {
-  DELETE_IMAGES_QUERY,
+  DELETE_IMAGES_QUERY, DELETE_SIMILAR_PRODUCTS,
   INSERT_PRODUCT_IMAGES_QUERY,
   INSERT_PRODUCT_QUERY,
-  REPLACE_PRODUCT_THUMBNAIL, UPDATE_PRODUCT_FIELDS
+  REPLACE_PRODUCT_THUMBNAIL,
+  UPDATE_PRODUCT_FIELDS
 } from "../services/queries";
+import { body, param, validationResult } from "express-validator";
+import { IProduct } from "@Shared/types";
 
 export const productsRouter = Router();
 
@@ -48,6 +59,12 @@ productsRouter.get('/search', async (
   res: Response
 ) => {
   try {
+    if (!Object.keys(req.query).length) {
+      res.status(400);
+      res.send("Filter is empty");
+      return;
+    }
+
     const [query, values] = getProductsFilterQuery(req.query);
     const [rows] = await connection.query<IProductEntity[]>(query, values);
 
@@ -129,8 +146,15 @@ productsRouter.post('/', async (
       await connection.query<OkPacket>(INSERT_PRODUCT_IMAGES_QUERY, [values]);
     }
 
+    const [rows] = await connection.query<IProductEntity[]>(
+      "SELECT * FROM products WHERE product_id = ?",
+      [productId]
+    );
+
+    const product = mapProductsEntity(rows)[0];
+
     res.status(201);
-    res.send(`Product id:${productId} has been added!`);
+    res.send(product);
   } catch (e) {
     throwServerError(res, e as Error);
   }
@@ -160,6 +184,11 @@ productsRouter.delete('/:id', async (
     await connection.query<OkPacket>(
       "DELETE FROM comments WHERE product_id = ?",
       [req.params.id]
+    );
+
+    await connection.query<OkPacket>(
+      "DELETE FROM similar_products WHERE first_product = ? OR second_product = ?",
+      [req.params.id, req.params.id]
     );
 
     await connection.query<OkPacket>(
@@ -225,52 +254,64 @@ productsRouter.post('/remove-images', async (
   }
 });
 
-productsRouter.post('/update-thumbnail/:id', async (
-  req: Request<{ id: string }, {}, { newThumbnailId: string }>,
-  res: Response
-) => {
-  try {
-    
-    const [currentThumbnailRows] = await connection.query<IProductImageEntity[]>(
-      "SELECT * FROM images WHERE product_id=? AND main=?",
-      [req.params.id, 1]
-    );
+productsRouter.post(
+  '/update-thumbnail/:id',
+  [
+    param('id').isUUID().withMessage('Product id is not UUID'),
+    body('newThumbnailId').isUUID().withMessage('New thumbnail id is empty or not UUID'),
+  ],
+  async (
+    req: Request<{ id: string }, {}, { newThumbnailId: string }>,
+    res: Response
+  ) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400);
+        res.json({ errors: errors.array() });
+        return;
+      }
 
-    if (!currentThumbnailRows?.length || currentThumbnailRows.length > 1) {
-      res.status(400);
-      res.send("Incorrect product id");
-      return;
+      const [currentThumbnailRows] = await connection.query<IProductImageEntity[]>(
+        "SELECT * FROM images WHERE product_id=? AND main=?",
+        [req.params.id, 1]
+      );
+
+      if (!currentThumbnailRows?.length || currentThumbnailRows.length > 1) {
+        res.status(400);
+        res.send("Incorrect product id");
+        return;
+      }
+
+      const [newThumbnailRows] = await connection.query<IProductImageEntity[]>(
+        "SELECT * FROM images WHERE product_id=? AND image_id=?",
+        [req.params.id, req.body.newThumbnailId]
+      );
+
+      if (newThumbnailRows?.length !== 1) {
+        res.status(400);
+        res.send("Incorrect new thumbnail id");
+        return;
+      }
+
+      const currentThumbnailId = currentThumbnailRows[0].image_id;
+      const [info] = await connection.query<OkPacket>(
+        REPLACE_PRODUCT_THUMBNAIL,
+        [currentThumbnailId, req.body.newThumbnailId, currentThumbnailId, req.body.newThumbnailId]
+      );
+
+      if (info.affectedRows === 0) {
+        res.status(404);
+        res.send("No one image has been updated");
+        return;
+      }
+
+      res.status(200);
+      res.send("New product thumbnail has been set!");
+    } catch (e) {
+      throwServerError(res, e as Error);
     }
-
-    const [newThumbnailRows] = await connection.query<IProductImageEntity[]>(
-      "SELECT * FROM images WHERE product_id=? AND image_id=?",
-      [req.params.id, req.body.newThumbnailId]
-    );
-
-    if (newThumbnailRows?.length !== 1) {
-      res.status(400);
-      res.send("Incorrect new thumbnail id");
-      return;
-    }
-
-    const currentThumbnailId = currentThumbnailRows[0].image_id;
-    const [info] = await connection.query<OkPacket>(
-      REPLACE_PRODUCT_THUMBNAIL,
-      [currentThumbnailId, req.body.newThumbnailId, currentThumbnailId, req.body.newThumbnailId]
-    );
-
-    if (info.affectedRows === 0) {
-      res.status(404);
-      res.send("No one image has been updated");
-      return;
-    }
-
-    res.status(200);
-    res.send("New product thumbnail has been set!");
-  } catch (e) {
-    throwServerError(res, e as Error);
-  }
-});
+  });
 
 productsRouter.patch('/:id', async (
   req: Request<{ id: string }, {}, ProductCreatePayload>,
@@ -308,3 +349,104 @@ productsRouter.patch('/:id', async (
     throwServerError(res, e as Error);
   }
 });
+
+productsRouter.get(
+  '/similar/:id',
+  [
+    param('id').isUUID().withMessage('Product id is not UUID')
+  ],
+  async (
+    req: Request<{ id: string }>,
+    res: Response
+  ) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const originProduct = req.params.id;
+
+      const [rows] = await connection.query<ISimilarProductEntity[]>(
+        "SELECT * FROM similar_products WHERE first_product = ? OR second_product = ?",
+        [originProduct, originProduct]
+      );
+
+      if (!rows?.length) {
+        return res.send([]);
+      }
+
+      const similarProductsIds = rows.map(({ first_product, second_product }) => {
+        return first_product === originProduct ? second_product : first_product;
+      });
+
+      const [similarProducts] = await connection.query<IProductEntity[]>(
+        "SELECT * FROM products WHERE product_id IN (?)",
+        [similarProductsIds]
+      );
+
+      const productsList: IProduct[] = similarProducts.map(({id, ...rest}) => {
+        return {
+          id: id,
+          ...rest
+        }
+      });
+
+      res.send(productsList);
+    } catch (e) {
+      throwServerError(res, e as Error);
+    }
+  });
+
+productsRouter.post(
+  '/add-similar',
+  [
+    body().custom(validateAddSimilarProductsBody)
+  ],
+  async (
+    req: Request<{}, {}, AddSimilarProductsPayload>,
+    res: Response
+  ) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      await connection.query<OkPacket>(
+        "INSERT INTO similar_products (first_product, second_product) VALUES ?",
+        [req.body]
+      );
+
+      res.status(201).send();
+    } catch (e) {
+      throwServerError(res, e as Error);
+    }
+  });
+
+productsRouter.post(
+  '/remove-similar',
+  [
+    body().custom(validateRemoveSimilarProductsBody)
+  ],
+  async (
+    req: Request<{}, {}, string[]>,
+    res: Response
+  ) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const [info] = await connection.query<OkPacket>(
+        DELETE_SIMILAR_PRODUCTS,
+        [req.body, req.body]
+      );
+
+      res.send(`${info.affectedRows} rows have been removed`);
+    } catch (e) {
+      throwServerError(res, e as Error);
+    }
+  });
+

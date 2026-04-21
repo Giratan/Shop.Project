@@ -1,16 +1,16 @@
 import axios from "axios";
 import { IProduct, IProductFilterPayload } from "@Shared/types";
-import { IProductEditData } from "../types";
+import { IProductEditData,  } from "../types";
 import { API_HOST } from "./const";
 
-export async function getProducts() {
+export async function getProducts(): Promise<IProduct[]> {
     const { data } = await axios.get<IProduct[]>(`${API_HOST}/products`);
-
-    console.log(data.length);
     return data || [];
 }
 
-export async function searchProducts(filter: IProductFilterPayload): Promise<IProduct[]> {
+export async function searchProducts(
+    filter: IProductFilterPayload
+): Promise<IProduct[]> {
     const { data } = await axios.get<IProduct[]>(
         `${API_HOST}/products/search`,
         { params: filter }
@@ -35,7 +35,6 @@ export async function removeProduct(id: string): Promise<void> {
     await axios.delete(`${API_HOST}/products/${id}`);
 }
 
-
 function splitNewImages(str = ""): string[] {
     return str
         .split(/\r\n|,/g)
@@ -48,15 +47,28 @@ function compileIdsToRemove(data: string | string[]): string[] {
     return data;
 }
 
+export async function createProduct(formData: IProductEditData): Promise<IProduct | null> {
+    try {
+        const payload: IProduct = {
+            id: "",
+            title: formData.title,
+            description: formData.description,
+            price: Number(formData.price)
+        }
+
+        const { data } = await axios.post<IProduct>(`${API_HOST}/products`, payload);
+        return data;
+    } catch (e) {
+        return null;
+    }
+}
 
 export async function updateProduct(
     productId: string,
     formData: IProductEditData
 ): Promise<void> {
     try {
-        const {
-            data: currentProduct
-        } = await axios.get<IProduct>(`${API_HOST}/products/${productId}`);
+        const { data: currentProduct } = await axios.get<IProduct>(`${API_HOST}/products/${productId}`);
 
         if (formData.commentsToRemove) {
             const commentsIdsToRemove = compileIdsToRemove(formData.commentsToRemove);
@@ -75,7 +87,6 @@ export async function updateProduct(
 
         if (formData.newImages) {
             const urls = splitNewImages(formData.newImages);
-
             const images = urls.map(url => ({ url, main: false }));
 
             if (!currentProduct.thumbnail) {
@@ -91,6 +102,17 @@ export async function updateProduct(
             });
         }
 
+        if (formData.similarToRemove) {
+            const ids = compileIdsToRemove(formData.similarToRemove);
+            await axios.post(`${API_HOST}/products/remove-similar`, ids);
+        }
+
+        if (formData.similarToAdd) {
+            const ids = compileIdsToRemove(formData.similarToAdd);
+            const pairs = ids.map(id => [productId, id]);
+            await axios.post(`${API_HOST}/products/add-similar`, pairs);
+        }
+
         await axios.patch(`${API_HOST}/products/${productId}`, {
             title: formData.title,
             description: formData.description,
@@ -98,5 +120,39 @@ export async function updateProduct(
         });
     } catch (e) {
         console.log(e);
+    }
+}
+
+export async function getSimilarProducts(
+    originProductId: string
+): Promise<IProduct[] | null> {
+    try {
+        const { data } = await axios.get<IProduct[]>(
+            `${API_HOST}/products/similar/${originProductId}`
+        );
+        return data;
+    } catch (e) {
+        return null;
+    }
+}
+
+export async function getNotSimilarProducts(
+    originProductId: string,
+    similarProducts: IProduct[] = []
+): Promise<IProduct[] | []> {
+    try {
+        if (similarProducts == null) {
+            return [];
+        } else {
+            const similarIdsSet = new Set(similarProducts.map(({ id }) => id));
+
+            const { data = [] } = await axios.get<IProduct[]>(`${API_HOST}/products`);
+
+            return data.filter(product => {
+                return product.id !== originProductId && !similarIdsSet.has(product.id);
+            });
+        }
+    } catch (e) {
+        return [];
     }
 }

@@ -6,20 +6,14 @@ export async function verifyRequisites(
     requisites: IAuthRequisites
 ): Promise<boolean> {
     try {
-        console.log( `${API_HOST}/auth`);
-        console.log(requisites);
-        
         const { status } = await axios.post(
-            `${API_HOST}/auth`,
+            `${API_HOST}/auth` as string,
             requisites
         );
 
-        console.log(status);
-
         return status === 200;
     } catch (err) {
-        console.log((err as Error).message);
-        console.log((err as Error).name);
+        console.log("произошел косяк");
         return false;
     }
 }

@@ -11,7 +11,8 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "express-ejs-layouts": "^2.5.1"
+    "express-ejs-layouts": "^2.5.1",
+    "stack-trace": "^1.0.0-pre2"
   },
   "devDependencies": {
     "@types/express-ejs-layouts": "^2.5.4"

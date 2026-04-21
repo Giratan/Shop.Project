@@ -1,4 +1,3 @@
-
 export interface IComment {
   id: string;
   name: string;
@@ -35,3 +34,5 @@ export interface IAuthRequisites {
   username: string;
   password: string;
 }
+
+export type SimilarProduct = Pick<IProduct, "id" | "title" | "price">;

@@ -1,9 +1,9 @@
-import { IComment, IProduct, IProductImage } from "@Shared/types";
-import { 
-  ICommentEntity, 
-  IProductEntity, 
-  IProductImageEntity 
+import {
+  ICommentEntity,
+  IProductEntity,
+  IProductImageEntity
 } from "../../types";
+import { IComment, IProduct, IProductImage } from "@Shared/types";
 
 export const mapCommentEntity = ({
   comment_id, product_id, ...rest
@@ -12,7 +12,6 @@ export const mapCommentEntity = ({
     id: comment_id,
     productId: product_id,
     ...rest
-    
   }
 }
 

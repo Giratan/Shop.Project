@@ -1,6 +1,15 @@
 import { Router, Request, Response } from "express";
-import { getProducts, searchProducts, getProduct, removeProduct, updateProduct } from "../models/products.model";
-import { IProductFilterPayload } from "@Shared/types";
+import {
+    createProduct,
+    getNotSimilarProducts,
+    getProduct,
+    getProducts,
+    getSimilarProducts,
+    removeProduct,
+    searchProducts,
+    updateProduct
+} from "../models/products.model";
+import { IProduct, IProductFilterPayload } from "@Shared/types";
 import { IProductEditData } from "../types";
 import { throwServerError } from "./helpers";
 
@@ -33,6 +42,28 @@ productsRouter.get('/search', async (
     }
 });
 
+productsRouter.get('/new-product', async (
+    req: Request,
+    res: Response
+) => {
+    try {
+        const product: IProduct = {
+            id: "",
+            title: "",
+            description: "",
+            price: 0
+        }
+
+        res.render("product/product", {
+            item: product,
+            similarProducts: [],
+            notSimilarProducts: []
+        });
+    } catch (e) {
+        throwServerError(res, e as Error);
+    }
+});
+
 productsRouter.get('/:id', async (
     req: Request<{ id: string }>,
     res: Response
@@ -41,8 +72,13 @@ productsRouter.get('/:id', async (
         const product = await getProduct(req.params.id);
 
         if (product) {
+            const similarProducts = await getSimilarProducts(req.params.id);
+            const notSimilarProducts = await getNotSimilarProducts(req.params.id, similarProducts ?? []);
+
             res.render("product/product", {
-                item: product
+                item: product,
+                similarProducts,
+                notSimilarProducts
             });
         } else {
             res.render("product/empty-product", {
@@ -59,6 +95,12 @@ productsRouter.get('/remove-product/:id', async (
     res: Response
 ) => {
     try {
+        if (req.session.username !== "admin") {
+            res.status(403);
+            res.send("Forbidden");
+            return;
+        }
+
         await removeProduct(req.params.id);
         res.redirect(`/${process.env.ADMIN_PATH}`);
     } catch (e) {
@@ -66,14 +108,29 @@ productsRouter.get('/remove-product/:id', async (
     }
 });
 
-
 productsRouter.post('/save/:id', async (
     req: Request<{ id: string }, {}, IProductEditData>,
     res: Response
 ) => {
     try {
-        const updatedProduct = await updateProduct(req.params.id, req.body);
-        res.send("OK");
+        await updateProduct(req.params.id, req.body);
+        res.redirect(`/${process.env.ADMIN_PATH}/${req.params.id}`);
+    } catch (e) {
+        throwServerError(res, e as Error);
+    }
+});
+
+productsRouter.post('/save', async (
+    req: Request<{}, {}, IProductEditData>,
+    res: Response
+) => {
+    try {
+        const newProduct = await createProduct(req.body);
+        if (newProduct) {
+            res.redirect(`/${process.env.ADMIN_PATH}/${newProduct.id}`);
+        } else {
+            console.log("Product is not created");
+        }
     } catch (e) {
         throwServerError(res, e as Error);
     }

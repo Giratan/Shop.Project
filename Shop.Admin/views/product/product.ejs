@@ -1,7 +1,7 @@
 <h1>
     <%= item.title %>
 </h1>
-<form action="<%= `save/${item.id}` %>" method="post" class="product-edit-form">
+<form action="<%= item.id ? `save/${item.id}` : " save" %>" method="post" class="product-edit-form">
     <div class="product-edit-fields">
         <div class="field">
             <label for="item-title">Title:</label>
@@ -18,17 +18,19 @@
             <input id="item-price" type="text" name="price" value="<%= item.price %>" />
         </div>
 
-        <div class="field">
-            <label for="item-new-images">New images URLs (use line break or a comma):</label>
-            <textarea id="item-new-images" rows="3" name="newImages"></textarea>
-        </div>
+        <% if (item.id) { %>
+            <div class="field">
+                <label for="item-new-images">New images URLs (use line break or a comma):</label>
+                <textarea id="item-new-images" rows="3" name="newImages"></textarea>
+            </div>
+            <% } %>
     </div>
 
     <% if (item.comments?.length) { %>
         <h2>Comments</h2>
         <div class="product-edit-comments">
             <% item.comments.forEach(function(comment) { %>
-                <%- include(`product-comment`, { comment: comment }) %>
+                <%- include('product-comment', { comment: comment }) %>
                     <% }); %>
         </div>
         <% } %>
@@ -42,8 +44,37 @@
                 </div>
                 <% } %>
 
-                    <div class="product-edit-footer">
-                        <button type="submit">Save changes</button>
-                        <a href="<%= `remove-product/${item.id}` %>">Delete product</a>
-                    </div>
+                    <% if (similarProducts?.length) { %>
+                        <h2>Similar products</h2>
+                        <div class="product-edit-similar">
+                            <% similarProducts.forEach(function(similarProduct) { %>
+                                <%- include('product-similar', { item: similarProduct }) %>
+                                    <% }); %>
+                        </div>
+                        <% } %>
+
+                            <% if (notSimilarProducts?.length) { %>
+                                <h2>Other products</h2>
+
+                                <div>
+                                    <label for="similarToAdd">Add similar products:</label>
+                                </div>
+
+                                <select name="similarToAdd" id="similarToAdd" class="not-similar-selector" multiple>
+                                    <% notSimilarProducts.forEach(function(notSimilarItem) { %>
+                                        <option value="<%= notSimilarItem.id %>">
+                                            <%= notSimilarItem.title %>
+                                        </option>
+                                        <% }); %>
+                                </select>
+                                <% } %>
+
+
+                                    <div class="product-edit-footer">
+                                        <button type="submit">Save changes</button>
+
+                                        <% if (item.id) { %>
+                                            <a href="<%= `remove-product/${item.id}` %>">Delete product</a>
+                                            <% } %>
+                                    </div>
 </form>
