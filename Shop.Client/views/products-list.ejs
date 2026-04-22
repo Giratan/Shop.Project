@@ -1,0 +1,19 @@
+<h1>Список товаров (<%= products.length %>)</h1>
+<div>
+    <input type="text" id="titleFilter" placeholder="Поиск по названию" />
+    <input type="number" id="minPrice" placeholder="Цена от" />
+    <input type="number" id="maxPrice" placeholder="Цена до" />
+    <button onclick="filterProducts()">Фильтровать</button>
+</div>
+<div id="productsList">
+    <% products.forEach(product => { %>
+        <div class="product">
+            <a href="/<%= product.id %>">
+                <h2><%= product.title %></h2>
+                <img src="<%= product.thumbnail ? product.thumbnail.url : '/img/placeholder.jpg' %>" alt="<%= product.title %>" />
+                <p>Цена: <%= product.price %></p>
+                <p>Комментариев: <%= product.comments ? product.comments.length : 0 %></p>
+            </a>
+        </div>
+    <% }); %>
+</div>
