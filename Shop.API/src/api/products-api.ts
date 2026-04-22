@@ -35,7 +35,7 @@ export const productsRouter = Router();
 const throwServerError = (res: Response, e: Error) => {
   console.debug(e.message);
   res.status(500);
-  res.send("Something went wrong");
+  res.send("Что-то пошло не так");
 }
 
 productsRouter.get('/', async (req: Request, res: Response) => {
@@ -98,7 +98,7 @@ productsRouter.get('/:id', async (
 
     if (!rows?.[0]) {
       res.status(404);
-      res.send(`Product with id ${req.params.id} is not found`);
+      res.send(`Товар с id ${req.params.id} не найден`);
       return;
     }
 
@@ -172,7 +172,7 @@ productsRouter.delete('/:id', async (
 
     if (!rows?.[0]) {
       res.status(404);
-      res.send(`Product with id ${req.params.id} is not found`);
+      res.send(`Товар с id ${req.params.id} не найден`);
       return;
     }
 
@@ -212,7 +212,7 @@ productsRouter.post('/add-images', async (
 
     if (!images?.length) {
       res.status(400);
-      res.send("Images array is empty");
+      res.send("Массив изображений пуст");
       return;
     }
 
@@ -220,7 +220,7 @@ productsRouter.post('/add-images', async (
     await connection.query<OkPacket>(INSERT_PRODUCT_IMAGES_QUERY, [values]);
 
     res.status(201);
-    res.send(`Images for a product id:${productId} have been added!`);
+    res.send(`Изображения для товара с id:${productId} добавлены!`);
   } catch (e) {
     throwServerError(res, e as Error);
   }
@@ -235,7 +235,7 @@ productsRouter.post('/remove-images', async (
 
     if (!imagesToRemove?.length) {
       res.status(400);
-      res.send("Images array is empty");
+      res.send("Массив изображений пуст");
       return;
     }
 
@@ -243,12 +243,12 @@ productsRouter.post('/remove-images', async (
 
     if (info.affectedRows === 0) {
       res.status(404);
-      res.send("No one image has been removed");
+      res.send("Ни одно изображение не было удалено");
       return;
     }
 
     res.status(200);
-    res.send(`Images have been removed!`);
+    res.send(`Изображения удалены!`);
   } catch (e) {
     throwServerError(res, e as Error);
   }
@@ -302,12 +302,12 @@ productsRouter.post(
 
       if (info.affectedRows === 0) {
         res.status(404);
-        res.send("No one image has been updated");
+        res.send("Ни одно изображение не было обновлено");
         return;
       }
 
       res.status(200);
-      res.send("New product thumbnail has been set!");
+      res.send("Новое главное изображение товара установлено!");
     } catch (e) {
       throwServerError(res, e as Error);
     }
@@ -327,7 +327,7 @@ productsRouter.patch('/:id', async (
 
     if (!rows?.[0]) {
       res.status(404);
-      res.send(`Product with id ${id} is not found`);
+      res.send(`Товар с id ${id} не найден`);
       return;
     }
 
@@ -344,7 +344,7 @@ productsRouter.patch('/:id', async (
     );
 
     res.status(200);
-    res.send(`Product id:${id} has been added!`);
+    res.send(`Товар с id ${id} обновлен!`);
   } catch (e) {
     throwServerError(res, e as Error);
   }
@@ -444,7 +444,7 @@ productsRouter.post(
         [req.body, req.body]
       );
 
-      res.send(`${info.affectedRows} rows have been removed`);
+      res.send(`${info.affectedRows} строк удалено`);
     } catch (e) {
       throwServerError(res, e as Error);
     }

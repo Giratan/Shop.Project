@@ -8,7 +8,6 @@ export let connection: Connection;
 
 export default function (dbConnection: Connection): Express {
   const app = express();
-  app.use(express.json());
 
   connection = dbConnection;
 

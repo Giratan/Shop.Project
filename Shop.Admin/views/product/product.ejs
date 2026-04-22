@@ -4,30 +4,30 @@
 <form action="<%= item.id ? `save/${item.id}` : " save" %>" method="post" class="product-edit-form">
     <div class="product-edit-fields">
         <div class="field">
-            <label for="item-title">Title:</label>
+            <label for="item-title">Название:</label>
             <input id="item-title" type="text" name="title" value="<%= item.title %>" />
         </div>
 
         <div class="field">
-            <label for="item-description">Description:</label>
+            <label for="item-description">Описание:</label>
             <textarea id="item-description" rows="3" name="description"><%= item.description %></textarea>
         </div>
 
         <div class="field">
-            <label for="item-price">Price:</label>
+            <label for="item-price">Цена:</label>
             <input id="item-price" type="text" name="price" value="<%= item.price %>" />
         </div>
 
         <% if (item.id) { %>
             <div class="field">
-                <label for="item-new-images">New images URLs (use line break or a comma):</label>
+                <label for="item-new-images">URL новых изображений (используйте перенос строки или запятую):</label>
                 <textarea id="item-new-images" rows="3" name="newImages"></textarea>
             </div>
             <% } %>
     </div>
 
     <% if (item.comments?.length) { %>
-        <h2>Comments</h2>
+        <h2>Комментарии</h2>
         <div class="product-edit-comments">
             <% item.comments.forEach(function(comment) { %>
                 <%- include('product-comment', { comment: comment }) %>
@@ -36,7 +36,7 @@
         <% } %>
 
             <% if (item.images?.length) { %>
-                <h2>Images</h2>
+                <h2>Изображения</h2>
                 <div class="product-edit-images">
                     <% item.images.forEach(function(image) { %>
                         <%- include('product-image', { image: image }) %>
@@ -45,7 +45,7 @@
                 <% } %>
 
                     <% if (similarProducts?.length) { %>
-                        <h2>Similar products</h2>
+                        <h2>Похожие товары</h2>
                         <div class="product-edit-similar">
                             <% similarProducts.forEach(function(similarProduct) { %>
                                 <%- include('product-similar', { item: similarProduct }) %>
@@ -54,10 +54,10 @@
                         <% } %>
 
                             <% if (notSimilarProducts?.length) { %>
-                                <h2>Other products</h2>
+                                <h2>Другие товары</h2>
 
                                 <div>
-                                    <label for="similarToAdd">Add similar products:</label>
+                                    <label for="similarToAdd">Добавить похожие товары:</label>
                                 </div>
 
                                 <select name="similarToAdd" id="similarToAdd" class="not-similar-selector" multiple>
@@ -71,10 +71,10 @@
 
 
                                     <div class="product-edit-footer">
-                                        <button type="submit">Save changes</button>
+                                        <button type="submit">Сохранить изменения</button>
 
                                         <% if (item.id) { %>
-                                            <a href="<%= `remove-product/${item.id}` %>">Delete product</a>
+                                            <a href="<%= `remove-product/${item.id}` %>">Удалить товар</a>
                                             <% } %>
                                     </div>
 </form>

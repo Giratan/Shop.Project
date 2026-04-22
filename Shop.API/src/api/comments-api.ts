@@ -24,7 +24,7 @@ commentsRouter.get('/', async (req: Request, res: Response) => {
     const err = e as Error;
     console.debug(err.message);
     res.status(500);
-    res.send("Something went wrong");
+    res.send("Что-то пошло не так");
   }
 });
 
@@ -49,7 +49,7 @@ commentsRouter.get(
 
       if (!rows?.[0]) {
         res.status(404);
-        res.send(`Comment with id ${req.params.id} is not found`);
+        res.send(`Комментарий с id ${req.params.id} не найден`);
         return;
       }
 
@@ -59,7 +59,7 @@ commentsRouter.get(
       const err = e as Error;
       console.debug(err.message);
       res.status(500);
-      res.send("Something went wrong");
+      res.send("Что-то пошло не так");
     }
   });
 
@@ -96,12 +96,12 @@ commentsRouter.post('/', async (
     );
 
     res.status(201);
-    res.send(`Comment id:${id} has been added!`);
+    res.send(`Комментарий с id:${id} добавлен!`);
   } catch (e) {
     const err = e as Error;
     console.debug(err.message);
     res.status(500);
-    res.send("Server error. Comment has not been created");
+    res.send("Ошибка сервера. Комментарий не создан");
   }
 });
 
@@ -157,7 +157,7 @@ commentsRouter.patch('/', async (
     const err = e as Error;
     console.log(err.message);
     res.status(500);
-    res.send("Server error");
+    res.send("Ошибка сервера");
   }
 });
 
@@ -170,7 +170,7 @@ commentsRouter.delete('/:id', async (req: Request<{ id: string }>, res: Response
 
     if (info.affectedRows === 0) {
       res.status(404);
-      res.send(`Comment with id ${req.params.id} is not found`);
+      res.send(`Комментарий с id ${req.params.id} не найден`);
       return;
     }
 
@@ -180,7 +180,7 @@ commentsRouter.delete('/:id', async (req: Request<{ id: string }>, res: Response
     const err = e as Error;
     console.log(err.message);
     res.status(500);
-    res.send("Server error. Comment has not been deleted");
+    res.send("Ошибка сервера. Комментарий не удален");
   }
 });
 

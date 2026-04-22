@@ -1,31 +1,31 @@
-<h1>Products (<%= items.length %>)</h1>
+<h1>Товары (<%= items.length %>)</h1>
 
 <form action="search" method="GET" class="products-search-form">
     <div class="products-search">
         <div>
-            <label for="filter-input">Title:</label>
+            <label for="filter-input">Название:</label>
             <input id="filter-input" type="text" name="title" value="<%= queryParams?.title || "" %>" />
         </div>
 
         <div>
-            <label for="filter-description">Description:</label>
+            <label for="filter-description">Описание:</label>
             <input id="filter-description" type="text" name="description"
                 value="<%= queryParams?.description || "" %>" />
         </div>
 
         <div>
-            <label for="filter-price-from">Price from:</label>
+            <label for="filter-price-from">Цена от:</label>
             <input id="filter-price-from" type="text" name="priceFrom" value="<%= queryParams?.priceFrom || "" %>" />
         </div>
 
         <div>
-            <label for="filter-price-to">Price to:</label>
+            <label for="filter-price-to">Цена до:</label>
             <input id="filter-price-to" type="text" name="priceTo" value="<%= queryParams?.priceTo || "" %>" />
         </div>
     </div>
 
-    <button type="submit">Search</button>
-    <a href="<%= `/${process.env.ADMIN_PATH}` %>">Reset filter</a>
+    <button type="submit">Поиск</button>
+    <a href="<%= `/${process.env.ADMIN_PATH}` %>">Сбросить фильтр</a>
 </form>
 
 <div class="products-list">
@@ -40,11 +40,11 @@
                     <%= product.title %>
                 </a>
                 <div>
-                    <span class="label">Images:</span>
+                    <span class="label">Изображения:</span>
                     <%= product.images?.length || 0 %>
                 </div>
                 <div>
-                    <span class="label">Price:</span>
+                    <span class="label">Цена:</span>
                     <%= product.price %>
                 </div>
             </div>

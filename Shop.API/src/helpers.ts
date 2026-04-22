@@ -155,24 +155,24 @@ export const enhanceProductsImages = (
 
 export const validateAddSimilarProductsBody = (items: AddSimilarProductsPayload = []): boolean => {
   if (!Array.isArray(items)) {
-    throw new Error("Request body is not an array");
+    throw new Error("Тело запроса не является массивом");
   }
 
   if (!items.length) {
-    throw new Error("An array is empty");
+    throw new Error("Массив пуст");
   }
 
   items?.forEach((connection: [string, string], index) => {
     if (connection?.length !== 2 || typeof connection?.[0] !== "string" || typeof connection?.[1] !== "string") {
-      throw new Error(`An array element with index ${index} doesn't match a pair of ids`);
+      throw new Error(`Элемент массива с индексом ${index} не соответствует паре id`);
     }
 
     if (!isUUID(connection[0])) {
-      throw new Error(`Value ${connection[0]} of the element with index ${index} is not UUID`);
+      throw new Error(`Значение ${connection[0]} элемента с индексом ${index} не является UUID`);
     }
 
     if (!isUUID(connection[1])) {
-      throw new Error(`Value ${connection[1]} of the element with index ${index} is not UUID`);
+      throw new Error(`Значение ${connection[1]} элемента с индексом ${index} не является UUID`);
     }
   });
 
@@ -181,16 +181,16 @@ export const validateAddSimilarProductsBody = (items: AddSimilarProductsPayload 
 
 export const validateRemoveSimilarProductsBody = (items: string[] = []): boolean => {
   if (!Array.isArray(items)) {
-    throw new Error("Request body is not an array");
+    throw new Error("Тело запроса не является массивом");
   }
 
   if (!items.length) {
-    throw new Error("An array is empty");
+    throw new Error("Массив пуст");
   }
 
   items?.forEach((id: string, index) => {
     if (!isUUID(id)) {
-      throw new Error(`Value ${id} with index ${index} is not UUID`);
+      throw new Error(`Значение ${id} с индексом ${index} не является UUID`);
     }
   });
 

@@ -14,7 +14,6 @@ export default function (): Express {
     resave: false
   }));
 
-  app.use(express.json());
   app.use(bodyParser.urlencoded({ extended: false }));
 
   app.set("view engine", "ejs");
